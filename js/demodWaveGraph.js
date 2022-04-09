@@ -4,7 +4,7 @@ let encodedWaveCtx = encodedWaveCanvas.getContext('2d');
 let canvas_width = encodedWaveCanvas.parentElement.clientWidth || 1100;
 let canvas_height = 250;
 let orgx = 50;
-let orgy = canvas_height / 2+10;
+let orgy = canvas_height / 2 + 10;
 
 encodedWaveCanvas.width = canvas_width;
 encodedWaveCanvas.height = canvas_height;
@@ -14,10 +14,10 @@ const wave_frequency_element = document.getElementById("swfrequency");
 const sampling_frequency_element = document.getElementById("safrequency")
 const vertical_scale_element = document.getElementById("reconwave_vertical_scale_factor");
 const horizontal_scale_element = document.getElementById("reconwave_horizontal_scale_factor");
-const noise=document.getElementById("recv_noise_scale_factor");
 const bl_scale_element = document.getElementById("bit_length_factor");
 const check_quantized_points = document.getElementById("quantized_points");
-console.log(noise);
+const n1 = document.getElementById("noisefrequency");
+
 // Draws the axes for the graph
 function drawAxes(ctx, orgx, orgy, line_start, line_end) {
     ctx.beginPath();
@@ -53,7 +53,7 @@ function drawPoint(ctx, x, y) {
     ctx.stroke();
     ctx.fillStyle = 'black';
     ctx.lineWidth = 1;
-    ctx.arc(x, y, radius*1.3, 0, 2 * Math.PI, false);
+    ctx.arc(x, y, radius * 1.3, 0, 2 * Math.PI, false);
     ctx.fill();
 
     ctx.closePath();
@@ -74,14 +74,13 @@ function xrange(start, stop, step) {
     return res;
 }
 
-function d2b(x,bitLength=8)
-{
-    var result = "0000000000000000000000000"+(x >>> 0).toString(2);
-    return(result.substr(result.length-bitLength));
+function d2b(x, bitLength = 8) {
+    var result = "0000000000000000000000000" + (x >>> 0).toString(2);
+    return (result.substr(result.length - bitLength));
 }
 
 // Will draw the sine wave starting from loc xOffset, yOffset
-function plotSine(ctx, amplitude, frequency, xOffset, yOffset, vertical_scaling_factor, horizontal_scaling_factor,mid_of_line) {
+function plotSine(ctx, amplitude, frequency, xOffset, yOffset, vertical_scaling_factor, horizontal_scaling_factor, mid_of_line, noise) {
     var width = 1000;
     var Fs = sampling_frequency_element.value;
     var StopTime = 1;
@@ -94,12 +93,43 @@ function plotSine(ctx, amplitude, frequency, xOffset, yOffset, vertical_scaling_
     });
     //console.log('t size is ', t.length);
     //console.log('x size is ', x.length);
-    var main_signal = [];
+    var main_sig = [];
     for (let i = 1; i <= 8; i++) {
-        main_signal.push(parseInt(document.getElementById(`bit${i}`).value));
+        main_sig.push(parseInt(document.getElementById(`bit${i}`).value));
     }
+    if (noise == 5) {
+        main_sig[3] = (main_sig[3] == 1) ? 0 : 1;
+        document.getElementById("ber").innerHTML = (1 / 8);
+        document.getElementById("eff").innerHTML = ((7 / 8) * 100) + "%";
+    }
+    else if (noise == 10) {
+        main_sig[3] = (main_sig[3] == 1) ? 0 : 1;
+        main_sig[4] = (main_sig[4] == 1) ? 0 : 1;
+        document.getElementById("ber").innerHTML = (2 / 8);
+        document.getElementById("eff").innerHTML = ((6 / 8) * 100) + "%";
+    }
+    else if (noise == 15) {
+        main_sig[3] = (main_sig[3] == 1) ? 0 : 1;
+        main_sig[4] = (main_sig[4] == 1) ? 0 : 1;
+        main_sig[5] = (main_sig[5] == 1) ? 0 : 1;
+        document.getElementById("ber").innerHTML = (3 / 8);
+        document.getElementById("eff").innerHTML = ((5 / 8) * 100) + "%";
+    }
+    else if (noise == 20) {
+        main_sig[3] = (main_sig[3] == 1) ? 0 : 1;
+        main_sig[4] = (main_sig[4] == 1) ? 0 : 1;
+        main_sig[5] = (main_sig[5] == 1) ? 0 : 1;
+        main_sig[6] = (main_sig[6] == 1) ? 0 : 1;
+        document.getElementById("ber").innerHTML = (4 / 8);
+        document.getElementById("eff").innerHTML = ((4 / 8) * 100) + "%";
+    }
+    else {
+        document.getElementById("ber").innerHTML = (0 / 8);
+        document.getElementById("eff").innerHTML = ((8 / 8) * 100) + "%";
+    }
+    document.getElementById("bits").innerHTML = main_sig;
 
-    plotStairCase(ctx, main_signal, vertical_scaling_factor, horizontal_scaling_factor);
+    plotStairCase(ctx, main_sig, vertical_scaling_factor, horizontal_scaling_factor);
 
     /*ctx.beginPath();
     ctx.lineWidth = 2;
@@ -167,11 +197,11 @@ export function getQuantizationLevels() {
 }
 
 export function drawReconWave() {
-    var wave_amplitude = wave_amplitude_element.value*2;
+    var wave_amplitude = wave_amplitude_element.value * 2;
     var wave_frequency = wave_frequency_element.value;
     var vertical_scaling_factor = vertical_scale_element.value;
     var horizontal_scaling_factor = horizontal_scale_element.value;
-
+    var noise = n1.value;
     canvas_height = encodedWaveCanvas.parentElement.clientHeight;
     canvas_width = encodedWaveCanvas.parentElement.clientWidth;
     if (canvas_height > 100 && !size_set) {
@@ -192,6 +222,6 @@ export function drawReconWave() {
     var mid_of_line = (line_start + line_end) / 2;
 
     drawAxes(encodedWaveCtx, orgx, orgy, line_start, line_end);
-    plotSine(encodedWaveCtx, wave_amplitude, wave_frequency, orgx, mid_of_line, vertical_scaling_factor, horizontal_scaling_factor,mid_of_line);
+    plotSine(encodedWaveCtx, wave_amplitude, wave_frequency, orgx, mid_of_line, vertical_scaling_factor, horizontal_scaling_factor, mid_of_line, noise);
     requestAnimationFrame(drawReconWave);
 }

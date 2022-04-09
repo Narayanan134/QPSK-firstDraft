@@ -60,6 +60,9 @@
     function updateBitLength(value) {
       document.getElementById("bitlength").innerHTML = value;
     }
+    function updateNoiseFreq(value){
+      document.getElementById("swNoise").innerHTML = value;
+    }
     function showsourcecanvas() {
       let sourceGraph = document.getElementById('sourceWaveCanvas');
       let sourcectx = sourceGraph.getContext('2d');
@@ -336,6 +339,13 @@
                 <input onchange="hsync(this.id)" type="range" min="10" max="200" step="10" value="40" class="slider"
                   id="recv_horizontal_scale_factor">
               </div>
+              <label for="fname" class="varname">Noise:
+                <span><span id="swNoise">1</span>Hz</span>
+              </label><br>
+              <div class="slidecontainer">
+                <input type="range" min="0" max="20" step="5" value="1" class="slider" oninput="updateNoiseFreq(this.value)"
+                  id="noisefrequency">
+              </div>
             </div>
           </div>
         </div>
@@ -434,7 +444,7 @@
               <p><strong>Number of Quantization levels : </strong><span id="binListSize"></span></p>
               <label for="fname" class="varname">Vertical Scale:</label><br>
               <div class="slidecontainer">
-                <input onchange="vsync(this.id)" type="range" min="1" max="20" step="1" value="1" class="slider"
+                <input onchange="vsync(this.id)" type="range" min="5" max="200" step="5" value="50" class="slider"
                   id="pm1_vertical_scale_factor">
               </div>
               <label for="fname" class="varname">Horizontal Scale:</label><br>
@@ -547,6 +557,11 @@
               <div class="slidecontainer">
                 <input onchange="hsync(this.id)" type="range" min="10" max="200" step="10" value="40" class="slider"
                   id="reconwave_horizontal_scale_factor">
+              </div>
+              <div class="parameters">
+                <h6>Bits : <span id="bits"></span></h6><br>
+                <h6>BER : <span id="ber"></span></h6><br>
+                <h6>Effeciency : <span id="eff"></span></h6>
               </div>
             </div>
           </div>
