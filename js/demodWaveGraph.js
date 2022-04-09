@@ -14,9 +14,10 @@ const wave_frequency_element = document.getElementById("swfrequency");
 const sampling_frequency_element = document.getElementById("safrequency")
 const vertical_scale_element = document.getElementById("reconwave_vertical_scale_factor");
 const horizontal_scale_element = document.getElementById("reconwave_horizontal_scale_factor");
+const noise=document.getElementById("recv_noise_scale_factor");
 const bl_scale_element = document.getElementById("bit_length_factor");
 const check_quantized_points = document.getElementById("quantized_points");
-
+console.log(noise);
 // Draws the axes for the graph
 function drawAxes(ctx, orgx, orgy, line_start, line_end) {
     ctx.beginPath();
